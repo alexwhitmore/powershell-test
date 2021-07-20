@@ -1,1 +1,1 @@
-(Get-Content ./dashboardTable.md).replace('That', 'This') | Set-Content './dashboardTable.md'
+(Get-Content ./dashboardTable.md).replace('0.0.0', '0.0.1') | Set-Content './dashboardTable.md'
