@@ -1,0 +1,41 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+variables:
+- group: ProjectEnvironmentVersions
+- name: versions
+  value: $[versions.dev]
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: '(Get-Content ./dashboardTable.md).replace(''$[versions.dev]'', ''0.0.2'') | Set-Content ''./dashboardTable.md'''
+
+- task: AzureCLI@2
+  inputs:
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: 'az pipelines variable-group variable update --group-id 2 --name dev --org https://dev.azure.com/alexanderwhitmore/ --project TJX%20Assignment --value 0.0.2'
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- checkout: self
+  path: ./dashboardTable
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
